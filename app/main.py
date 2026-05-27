@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app import models
 from app.database import Base, engine
-from app.routes import views, tasks
+from app.routes import views, tasks, events
 
 Base.metadata.create_all(bind=engine)
 
@@ -13,3 +13,4 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(views.router)
 app.include_router(tasks.router)
+app.include_router(events.router)

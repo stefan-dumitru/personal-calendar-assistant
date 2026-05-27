@@ -53,3 +53,42 @@ def delete_task(db: Session, task_id: int):
     db.commit()
 
     return task
+
+
+def get_events(db: Session):
+    return db.query(models.Event).order_by(models.Event.start_datetime.asc()).all()
+
+
+def create_event(
+    db: Session,
+    title: str,
+    description: str | None,
+    start_datetime,
+    end_datetime,
+    location: str | None,
+):
+    event = models.Event(
+        title=title,
+        description=description,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        location=location,
+    )
+
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+
+    return event
+
+
+def delete_event(db: Session, event_id: int):
+    event = db.query(models.Event).filter(models.Event.id == event_id).first()
+
+    if not event:
+        return None
+
+    db.delete(event)
+    db.commit()
+
+    return event

@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette import status
 from fastapi import Request
-
+from datetime import datetime
 from app import crud
 from app.database import get_db
 
@@ -31,9 +31,24 @@ def list_tasks(request: Request, db: Session = Depends(get_db)):
 def create_task(
     title: str = Form(...),
     description: str = Form(""),
+    due_date: str = Form(""),
+    estimated_minutes: int | None = Form(None),
+    priority: str = Form("medium"),
     db: Session = Depends(get_db),
 ):
-    crud.create_task(db, title=title, description=description or None)
+    parsed_due_date = None
+
+    if due_date:
+        parsed_due_date = datetime.fromisoformat(due_date)
+
+    crud.create_task(
+        db,
+        title=title,
+        description=description or None,
+        due_date=parsed_due_date,
+        estimated_minutes=estimated_minutes,
+        priority=priority,
+    )
 
     return RedirectResponse(
         url="/tasks",
